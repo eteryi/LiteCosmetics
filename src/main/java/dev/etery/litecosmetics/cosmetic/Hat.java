@@ -3,8 +3,9 @@ package dev.etery.litecosmetics.cosmetic;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.configuration.MemorySection;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import org.omg.CORBA.PUBLIC_MEMBER;
+import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.Locale;
 
@@ -20,6 +21,9 @@ public class Hat implements Cosmetic {
         this.name = name;
         this.description = description;
         this.item = new ItemStack(item);
+        ItemMeta meta = this.item.getItemMeta();
+        meta.setDisplayName(displayName());
+        this.item.setItemMeta(meta);
         this.price = price;
     }
 
@@ -45,7 +49,11 @@ public class Hat implements Cosmetic {
 
     @Override
     public ItemStack rawIcon() {
-        return this.item;
+        return this.item.clone();
+    }
+
+    public void wear(Player player) {
+        player.getInventory().setHelmet(this.icon());
     }
 
     public static Hat from(String id, MemorySection section) {

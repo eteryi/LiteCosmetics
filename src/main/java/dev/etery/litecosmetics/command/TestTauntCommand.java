@@ -1,6 +1,8 @@
 package dev.etery.litecosmetics.command;
 
+import dev.etery.litecosmetics.Category;
 import dev.etery.litecosmetics.LiteCosmetics;
+import dev.etery.litecosmetics.cosmetic.Hat;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -12,7 +14,11 @@ public class TestTauntCommand implements CommandExecutor {
         if (commandSender instanceof Player) {
             LiteCosmetics cosmetics = LiteCosmetics.get();
             Player p = (Player) commandSender;
-            p.getInventory().addItem(cosmetics.createTauntDiamond());
+            Category<Hat> hats = cosmetics.category("hats");
+            if (hats == null) return false;
+            if (cosmetics.player(p).getSelected(hats) != null) {
+                cosmetics.player(p).getSelected(hats).wear(p);
+            }
         }
         return true;
     }

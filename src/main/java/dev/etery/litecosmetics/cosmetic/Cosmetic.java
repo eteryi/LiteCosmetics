@@ -15,7 +15,7 @@ public interface Cosmetic {
     String description();
     ItemStack rawIcon();
     default ItemStack icon() {
-        ItemStack stack = rawIcon();
+        ItemStack stack = rawIcon().clone();
         ItemMeta meta = stack.getItemMeta();
         meta.setDisplayName(ChatColor.RESET + ChatColor.translateAlternateColorCodes('&', displayName()));
 

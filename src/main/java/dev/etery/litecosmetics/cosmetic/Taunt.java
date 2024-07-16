@@ -96,7 +96,7 @@ public class Taunt implements Cosmetic {
 
     @Override
     public ItemStack rawIcon() {
-        return this.icon;
+        return this.icon.clone();
     }
 
     public static Taunt from(String id, MemorySection section) {

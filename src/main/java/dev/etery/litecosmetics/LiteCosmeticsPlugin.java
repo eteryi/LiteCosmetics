@@ -21,6 +21,7 @@ public final class LiteCosmeticsPlugin extends JavaPlugin {
 
     @Override
     public void onEnable() {
+
         // Plugin startup login
         LITECOIN = JavaPlugin.getPlugin(me.stephenminer.litecoin.LiteCoin.class);
         tauntLoader.load(cosmetics);

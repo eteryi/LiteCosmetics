@@ -4,6 +4,9 @@ main: dev.etery.litecosmetics.LiteCosmeticsPlugin
 depend:
   - "LiteCoin"
 commands:
+  taunt:
+    usage: /taunt
+    description: taunting
   shop:
     usage: /shop
     description: shopping
