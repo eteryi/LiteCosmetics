@@ -1,0 +1,21 @@
+name: Taunts
+description: Taunts are used mid game to display cool images and sounds.
+icon: DIAMOND
+
+cosmetics:
+  cross:
+    display: "&eCross"
+    description: "The Cross taunt, a CLASSIC!"
+    sound: ARROW_HIT
+    icon: NETHER_STAR
+    vol: 1.0
+    pitch: 1.0
+    price: 200
+  sword:
+    sound: BAT_DEATH
+    vol: 1.0
+    description: "The Sword Taunt, a formidable taunt to be seen in the ranks of the ungodly."
+    icon: DIAMOND_SWORD
+    pitch: 1.0
+    display: Sword
+    price: 100

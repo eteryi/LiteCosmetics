@@ -1,0 +1,10 @@
+name: Hats
+description: Hats are displayed on game as a cool and awesome cosmetic! (PLACEHOLDER TEXT)
+icon: GLASS
+
+cosmetics:
+  glass:
+    display: Astronaut Helmet
+    description: "This is an example of an cosmetic description on the Astronaut Helmet"
+    item: GLASS
+    price: 300
