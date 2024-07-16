@@ -13,6 +13,8 @@ import java.io.File;
 
 public final class LiteCosmeticsPlugin extends JavaPlugin {
     // TODO fix this lmao
+    // TODO allow for stained glass usage
+    // TODO Create LiteCosmeticsRegisterEvent and LiteCosmeticsSelectEvent
     private static LiteCoin LITECOIN;
     public static LiteCoin getLiteCoin() {
         return LITECOIN;
