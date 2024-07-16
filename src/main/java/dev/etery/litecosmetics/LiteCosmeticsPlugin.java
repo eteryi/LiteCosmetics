@@ -30,7 +30,6 @@ public final class LiteCosmeticsPlugin extends JavaPlugin {
         hatLoader.load(cosmetics);
         ((LiteCosmeticsImpl) cosmetics).load();
         Category<Taunt> taunt = cosmetics.category("taunts");
-        getCommand("taunt").setExecutor(new TestTauntCommand());
         getCommand("shop").setExecutor(new CosmeticShopCommand(cosmetics));
         getServer().getPluginManager().registerEvents(new PlayerListener(cosmetics), this);
     }
