@@ -9,6 +9,8 @@ import dev.etery.litecosmetics.impl.LiteCosmeticsImpl;
 import me.stephenminer.litecoin.LiteCoin;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.io.File;
+
 public final class LiteCosmeticsPlugin extends JavaPlugin {
     // TODO fix this lmao
     private static LiteCoin LITECOIN;
@@ -16,7 +18,17 @@ public final class LiteCosmeticsPlugin extends JavaPlugin {
         return LITECOIN;
     }
     private final LiteCosmetics cosmetics = LiteCosmetics.get();
-    private final CategoryLoader<Taunt> tauntLoader = new CategoryLoader<>(this, "taunts", Taunt::from);
+    private final CategoryLoader<Taunt> tauntLoader = new CategoryLoader<>(this, "taunts", Taunt::from, () -> {
+        File tauntDir = new File(this.getDataFolder(), "taunts");
+        if (!tauntDir.exists()) {
+            if (!tauntDir.mkdir()) {
+                throw new RuntimeException("Couldn't create /taunts");
+            }
+            this.saveResource("taunts/cross.png", false);
+            this.saveResource("taunts/sword.png", false);
+        }
+
+    });
     private final CategoryLoader<Hat> hatLoader = new CategoryLoader<>(this, "hats", Hat::from);
 
     @Override

@@ -20,8 +20,9 @@ public class CategoryLoader<T extends Cosmetic> {
     private Category<T> category;
     private final String id;
     private final BiFunction<String, MemorySection, T> loader;
+    private final Runnable loadCallback;
 
-    public CategoryLoader(JavaPlugin plugin, String name, BiFunction<String, MemorySection, T> loader) {
+    public CategoryLoader(JavaPlugin plugin, String name, BiFunction<String, MemorySection, T> loader, Runnable onLoad) {
         this.configFile = new File(plugin.getDataFolder(), name + ".yml");
         if (!this.configFile.exists()) {
             plugin.saveResource(name + ".yml", false);
@@ -29,9 +30,15 @@ public class CategoryLoader<T extends Cosmetic> {
         this.id = name;
         this.configuration = YamlConfiguration.loadConfiguration(configFile);
         this.loader = loader;
+        this.loadCallback = onLoad;
+    }
+
+    public CategoryLoader(JavaPlugin plugin, String name, BiFunction<String, MemorySection, T> loader) {
+        this(plugin, name, loader, () -> {});
     }
 
     public void load(LiteCosmetics cosmetics) {
+        this.loadCallback.run();
         String name = configuration.getString("name");
         String description = configuration.getString("description");
         String materialStr = configuration.getString("icon");

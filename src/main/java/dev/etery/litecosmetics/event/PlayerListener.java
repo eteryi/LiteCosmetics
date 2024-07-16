@@ -15,13 +15,16 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryInteractEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.meta.ItemMeta;
 
+import java.time.Duration;
 import java.util.List;
+import java.util.WeakHashMap;
 
 public class PlayerListener implements Listener {
+    private static final long cooldownTime = Duration.ofSeconds(12).toMillis();
     private final LiteCosmetics cosmetics;
+    private final WeakHashMap<Player, Long> cooldown = new WeakHashMap<>();
 
     public PlayerListener(LiteCosmetics cosmetics) {
         this.cosmetics = cosmetics;
@@ -37,13 +40,21 @@ public class PlayerListener implements Listener {
         if (lore.isEmpty()) return;
         if (!ChatColor.stripColor(lore.get(0)).equals("Litebridge")) return;
 
+        Player p = event.getPlayer();
+
         Category<Taunt> taunts = cosmetics.category("taunts");
         CosmeticPlayer cosmeticPlayer = cosmetics.player(event.getPlayer());
 
         Taunt taunt = cosmeticPlayer.getSelected(taunts);
 
         if (event.getAction() == Action.LEFT_CLICK_AIR && taunt != null) {
+            if (System.currentTimeMillis() - cooldown.getOrDefault(event.getPlayer(), 0L) < cooldownTime) {
+                long playerCooldown = cooldown.getOrDefault(p, 0L);
+                p.sendMessage(ChatColor.RED + "You're still in cooldown, please wait " + Duration.ofMillis(cooldownTime - (System.currentTimeMillis() - playerCooldown)).getSeconds() + " seconds");
+                return;
+            }
             taunt.use(event.getPlayer());
+            cooldown.put(p, System.currentTimeMillis());
         }
 
         if (event.getAction() == Action.RIGHT_CLICK_AIR) {

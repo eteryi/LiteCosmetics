@@ -111,8 +111,6 @@ public class Taunt implements Cosmetic {
         File tauntDir = new File(JavaPlugin.getPlugin(LiteCosmeticsPlugin.class).getDataFolder(), "taunts");
         if (!tauntDir.exists()) if (!tauntDir.mkdir()) throw new RuntimeException("Couldn't find a /taunts directory for the images");
         File imageFile = new File(tauntDir, id.split(":", 2)[1] + ".png");
-        System.out.println(imageFile.getAbsolutePath());
-        System.out.println(imageFile.exists());
         BufferedImage image;
         try {
             image = ImageIO.read(imageFile);

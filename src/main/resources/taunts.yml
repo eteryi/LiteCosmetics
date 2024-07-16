@@ -5,17 +5,17 @@ icon: DIAMOND
 cosmetics:
   cross:
     display: "&eCross"
-    description: "The Cross taunt, a CLASSIC!"
+    description: "This should be a description but honestly I'm too tired."
     sound: ARROW_HIT
     icon: NETHER_STAR
     vol: 1.0
     pitch: 1.0
-    price: 200
+    price: 50
   sword:
-    sound: BAT_DEATH
+    sound: SHOOT_ARROW
     vol: 1.0
-    description: "The Sword Taunt, a formidable taunt to be seen in the ranks of the ungodly."
+    description: "The Sword Taunt, a good one, you should choose this one, believe."
     icon: DIAMOND_SWORD
     pitch: 1.0
     display: Sword
-    price: 100
+    price: 10
