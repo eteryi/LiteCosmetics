@@ -1,7 +1,6 @@
 package dev.etery.litecosmetics.impl;
 
 import dev.etery.litecosmetics.Category;
-import dev.etery.litecosmetics.LiteCosmetics;
 import dev.etery.litecosmetics.LiteCosmeticsPlugin;
 import dev.etery.litecosmetics.cosmetic.Cosmetic;
 import dev.etery.litecosmetics.data.CosmeticPlayer;
@@ -37,7 +36,7 @@ public class CosmeticPlayerSerializer {
             UUID uuid = UUID.fromString(k);
             MemorySection section = (MemorySection) v;
             List<String> cosmeticsBought = section.getStringList("cosmetics");
-            CosmeticPlayer player = new CosmeticPlayerImpl();
+            CosmeticPlayer player = new CosmeticPlayerImpl(uuid);
             cosmeticsBought.forEach(player::give);
             MemorySection selected = (MemorySection) section.get("selected");
             if (selected != null) {
@@ -56,9 +55,7 @@ public class CosmeticPlayerSerializer {
     protected void save() {
         cosmetics.players().forEach(entry -> {
             playerData.set(entry.getKey().toString() + ".cosmetics", entry.getValue().boughtCosmetics());
-            entry.getValue().selectedCosmetics().forEach(category -> {
-                playerData.set(entry.getKey().toString() + ".selected." + category.getKey().id, category.getValue().id());
-            });
+            entry.getValue().selectedCosmetics().forEach(category -> playerData.set(entry.getKey().toString() + ".selected." + category.getKey().id, category.getValue().id()));
         });
         try {
             playerData.save(playerDataFile);

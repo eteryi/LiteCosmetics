@@ -1,6 +1,7 @@
 package dev.etery.litecosmetics.cosmetic;
 
 import dev.etery.litecosmetics.LiteCosmeticsPlugin;
+import dev.etery.litecosmetics.data.ItemDecoder;
 import org.bukkit.*;
 import org.bukkit.configuration.MemorySection;
 import org.bukkit.entity.Player;
@@ -25,7 +26,7 @@ public class Taunt implements Cosmetic {
     public final float pitch;
     private final int[] rgb;
 
-    public Taunt(String id, String tauntName, String description, BufferedImage image, Sound sound, int price, float volume, float pitch, Material material) {
+    public Taunt(String id, String tauntName, String description, BufferedImage image, Sound sound, int price, float volume, float pitch, ItemStack item) {
         this.tauntImage = image;
         this.name = tauntName;
         this.id = id;
@@ -34,7 +35,7 @@ public class Taunt implements Cosmetic {
         this.tauntSound = sound;
         this.volume = volume;
         this.pitch = pitch;
-        this.icon = new ItemStack(material);
+        this.icon = item;
         rgb = this.tauntImage.getRGB(0, 0, this.tauntImage.getWidth(), this.tauntImage.getHeight(), null, 0, this.tauntImage.getWidth());
     }
 
@@ -105,7 +106,7 @@ public class Taunt implements Cosmetic {
         String description = section.getString("description");
         float vol = (float) section.getDouble("vol");
         float pitch = (float) section.getDouble("pitch");
-        String rawIcon = section.getString("icon");
+        ItemStack item = ItemDecoder.decode(section, "icon");
         int price = section.getInt("price");
 
         File tauntDir = new File(JavaPlugin.getPlugin(LiteCosmeticsPlugin.class).getDataFolder(), "taunts");
@@ -118,9 +119,7 @@ public class Taunt implements Cosmetic {
             throw new RuntimeException(e);
         }
         Sound sound;
-        Material material;
         sound = Sound.valueOf(rawSound.toUpperCase(Locale.ROOT));
-        material = Material.valueOf(rawIcon.toUpperCase(Locale.ROOT));
-        return new Taunt(id, name, description, image, sound, price, vol, pitch, material);
+        return new Taunt(id, name, description, image, sound, price, vol, pitch, item);
     }
 }

@@ -1,13 +1,11 @@
 package dev.etery.litecosmetics.cosmetic;
 
+import dev.etery.litecosmetics.data.ItemDecoder;
 import org.bukkit.ChatColor;
-import org.bukkit.Material;
 import org.bukkit.configuration.MemorySection;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-
-import java.util.Locale;
 
 public class Hat implements Cosmetic {
     public final int price;
@@ -16,7 +14,7 @@ public class Hat implements Cosmetic {
     public final ItemStack item;
     public final String description;
 
-    public Hat(String id, String name, String description, Material item, int price) {
+    public Hat(String id, String name, String description, ItemStack item, int price) {
         this.id = id;
         this.name = name;
         this.description = description;
@@ -59,16 +57,9 @@ public class Hat implements Cosmetic {
     public static Hat from(String id, MemorySection section) {
         String name = section.getString("display");
         String description = section.getString("description");
-        String rawMaterial = section.getString("item");
+        ItemStack stack = ItemDecoder.decode(section, "item");
         int price = section.getInt("price");
 
-        Material material;
-        try {
-            material = Material.valueOf(rawMaterial.toUpperCase(Locale.ROOT));
-        } catch (IllegalArgumentException exception) {
-            material = Material.GLASS;
-        }
-
-        return new Hat(id, name, description, material, price);
+        return new Hat(id, name, description, stack, price);
     }
 }

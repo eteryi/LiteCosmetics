@@ -2,8 +2,10 @@ package dev.etery.litecosmetics;
 
 import dev.etery.litecosmetics.cosmetic.Cosmetic;
 import dev.etery.litecosmetics.data.CosmeticPlayer;
+import dev.etery.litecosmetics.event.LCOpenShopEvent;
 import dev.etery.litecosmetics.inventory.InventoryBuilder;
 import me.stephenminer.litecoin.LiteCoin;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
@@ -11,7 +13,6 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -98,8 +99,10 @@ public class Category<T extends Cosmetic> {
     }
 
     public Inventory getShop(Player player) {
+        LCOpenShopEvent lcEvent = new LCOpenShopEvent(player, LiteCosmetics.get(), this);
+        Bukkit.getPluginManager().callEvent(lcEvent);
+        if (lcEvent.isCancelled()) return null;
         InventoryBuilder builder = new InventoryBuilder(ChatColor.RESET + "" + ChatColor.WHITE + ChatColor.BOLD + " --> " +  this.display, 5);
-        int i = 0;
         builder.setInteraction((event) -> {
            ItemStack stack = event.getCurrentItem();
            ItemMeta meta = stack.getItemMeta();
@@ -115,7 +118,7 @@ public class Category<T extends Cosmetic> {
            LiteCoin liteCoin = LiteCosmeticsPlugin.getLiteCoin();
            LiteCosmetics liteCosmetics = LiteCosmetics.get();
            if (liteCoin.getBalance(player) >= cosmetic.price() && !liteCosmetics.player(player).has(cosmetic)) {
-               liteCoin.setBalance(player, liteCoin.getBalance(player) - cosmetic.price());
+               liteCoin.incrementBalance(player, -cosmetic.price());
                player.sendMessage(ChatColor.GREEN + "You've just bought " + ChatColor.RESET + cosmetic.displayName());
                liteCosmetics.player(player).give(cosmetic);
                updateShop(player, event.getInventory());
@@ -126,7 +129,6 @@ public class Category<T extends Cosmetic> {
                player.sendMessage(ChatColor.YELLOW + "You've just equipped the " + ChatColor.RESET + cosmetic.displayName());
                liteCosmetics.player(player).select(this, cosmetic);
                updateShop(player, event.getInventory());
-               return;
            }
         });
         Inventory inventory = builder.build(player);

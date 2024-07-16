@@ -1,4 +1,4 @@
-package dev.etery.litecosmetics.event;
+package dev.etery.litecosmetics.listener;
 
 import dev.etery.litecosmetics.Category;
 import dev.etery.litecosmetics.LiteCosmetics;

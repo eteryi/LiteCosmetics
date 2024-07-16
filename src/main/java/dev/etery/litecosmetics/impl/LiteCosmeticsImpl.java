@@ -4,7 +4,9 @@ import dev.etery.litecosmetics.Category;
 import dev.etery.litecosmetics.LiteCosmetics;
 import dev.etery.litecosmetics.cosmetic.Cosmetic;
 import dev.etery.litecosmetics.data.CosmeticPlayer;
+import dev.etery.litecosmetics.event.LCOpenShopEvent;
 import dev.etery.litecosmetics.inventory.InventoryBuilder;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -52,7 +54,7 @@ public class LiteCosmeticsImpl implements LiteCosmetics {
 
     @Override
     public CosmeticPlayer player(Player player) {
-        if (cosmeticPlayers.get(player.getUniqueId()) == null) cosmeticPlayers.put(player.getUniqueId(), new CosmeticPlayerImpl());
+        if (cosmeticPlayers.get(player.getUniqueId()) == null) cosmeticPlayers.put(player.getUniqueId(), new CosmeticPlayerImpl(player.getUniqueId()));
         return cosmeticPlayers.get(player.getUniqueId());
     }
 
@@ -63,6 +65,10 @@ public class LiteCosmeticsImpl implements LiteCosmetics {
 
     @Override
     public void openShop(Player player) {
+        LCOpenShopEvent lcEvent = new LCOpenShopEvent(player, this, null);
+        Bukkit.getPluginManager().callEvent(lcEvent);
+        if (lcEvent.isCancelled()) return;
+
         InventoryBuilder inventory = new InventoryBuilder(ChatColor.RESET + "" + ChatColor.GOLD + ChatColor.BOLD + "Shop", 5);
         int i = 0;
         for (Category<?> category : categories()) {
@@ -83,7 +89,8 @@ public class LiteCosmeticsImpl implements LiteCosmetics {
            if (category(id) == null) return;
            Category<Cosmetic> category = category(id);
            event.getWhoClicked().closeInventory();
-           event.getWhoClicked().openInventory(category.getShop((Player) event.getWhoClicked()));
+           Inventory categoryShop = category.getShop((Player) event.getWhoClicked());
+           if (categoryShop != null) event.getWhoClicked().openInventory(categoryShop);
         });
         Inventory inv = inventory.build(player);
         player.openInventory(inv);

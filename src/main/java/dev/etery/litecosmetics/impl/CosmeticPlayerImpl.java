@@ -1,8 +1,12 @@
 package dev.etery.litecosmetics.impl;
 
 import dev.etery.litecosmetics.Category;
+import dev.etery.litecosmetics.LiteCosmetics;
 import dev.etery.litecosmetics.cosmetic.Cosmetic;
 import dev.etery.litecosmetics.data.CosmeticPlayer;
+import dev.etery.litecosmetics.event.LCEquipCosmeticEvent;
+import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -22,9 +26,20 @@ public class CosmeticPlayerImpl implements CosmeticPlayer {
         return cosmeticsBought.contains(cosmetic.id());
     }
 
+    private final UUID uuid;
+
+    public CosmeticPlayerImpl(UUID uuid) {
+        this.uuid = uuid;
+    }
+    public Player asPlayer() {
+        return Bukkit.getPlayer(uuid);
+    }
+
     @Override
     public <T extends Cosmetic> void select(Category<T> category, T cosmetic) {
-        this.selectedCosmetics.put(category, cosmetic);
+        LCEquipCosmeticEvent event = new LCEquipCosmeticEvent(asPlayer(), LiteCosmetics.get(), category, cosmetic);
+        Bukkit.getPluginManager().callEvent(event);
+        if (!event.isCancelled()) this.selectedCosmetics.put(category, cosmetic);
     }
 
     @Override

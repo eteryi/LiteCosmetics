@@ -41,15 +41,9 @@ public class CategoryLoader<T extends Cosmetic> {
         this.loadCallback.run();
         String name = configuration.getString("name");
         String description = configuration.getString("description");
-        String materialStr = configuration.getString("icon");
-        Material material;
-        try {
-            material = Material.valueOf(materialStr.toUpperCase(Locale.ROOT));
-        } catch (IllegalArgumentException e) {
-            material = Material.PAPER;
-        }
+        ItemStack item = ItemDecoder.decode(configuration, "icon");
 
-        this.category = new Category<>(this.id, name, description, new ItemStack(material));
+        this.category = new Category<>(this.id, name, description, item);
 
         MemorySection section = (MemorySection) configuration.get("cosmetics");
         Map<String, Object> map = section.getValues(false);
