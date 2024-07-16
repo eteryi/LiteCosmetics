@@ -1,14 +1,8 @@
 package dev.etery.litecosmetics.cosmetic;
 
 import dev.etery.litecosmetics.LiteCosmeticsPlugin;
-import net.minecraft.server.v1_8_R3.EntityPlayer;
-import net.minecraft.server.v1_8_R3.EnumParticle;
-import net.minecraft.server.v1_8_R3.ILocationSource;
-import net.minecraft.server.v1_8_R3.PacketPlayOutWorldParticles;
 import org.bukkit.*;
 import org.bukkit.configuration.MemorySection;
-import org.bukkit.craftbukkit.v1_8_R3.CraftWorld;
-import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -17,7 +11,6 @@ import org.bukkit.util.Vector;
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.*;
-import java.util.Base64;
 import java.util.Locale;
 
 public class Taunt implements Cosmetic {
@@ -59,8 +52,6 @@ public class Taunt implements Cosmetic {
         copyDir.multiply(-((double)this.tauntImage.getWidth()) / 2.0);
 
         Location startLoc = player.getLocation().add(0, 2, 0).add(copyDir);
-        CraftPlayer craftPlayer = (CraftPlayer) player;
-        EntityPlayer entityPlayer = craftPlayer.getHandle();
         for (int y = 1; y <= this.tauntImage.getHeight(); y++) {
             for (int x = 0; x < this.tauntImage.getWidth(); x++) {
                 int index = (this.tauntImage.getHeight() - y) * this.tauntImage.getWidth() + x;
@@ -70,19 +61,7 @@ public class Taunt implements Cosmetic {
                 int B = rgb[index] & 0xff;
 
                 if (A == 255) {
-                    ((CraftWorld) player.getWorld()).getHandle().sendParticles(
-                            entityPlayer,
-                            EnumParticle.REDSTONE,
-                            true,
-                            (float) startLoc.getX(),
-                            (float) startLoc.getY(),
-                            (float) startLoc.getZ(),
-                            0,
-                            R / 255F,
-                            G / 255F,
-                            B / 255F,
-                            1F
-                    );
+                    startLoc.getWorld().spigot().playEffect(startLoc, Effect.COLOURED_DUST, 0, 1, ((float)R) / 255F, ((float)G) / 255F, ((float) B) / 255F, 1, 0, 64);
                 }
 
                 startLoc = startLoc.add(dir);
@@ -134,7 +113,7 @@ public class Taunt implements Cosmetic {
         File imageFile = new File(tauntDir, id.split(":", 2)[1] + ".png");
         System.out.println(imageFile.getAbsolutePath());
         System.out.println(imageFile.exists());
-        BufferedImage image = null;
+        BufferedImage image;
         try {
             image = ImageIO.read(imageFile);
         } catch (IOException e) {
