@@ -1,16 +1,11 @@
 package dev.etery.litecosmetics.inventory;
 
-import com.avaje.ebean.validation.NotNull;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 public class InventoryBuilder {
@@ -31,6 +26,9 @@ public class InventoryBuilder {
         return this;
     }
 
+    public ItemStack getItem(int slot) {
+        return this.items[slot];
+    }
     public InventoryBuilder setInteraction(Consumer<InventoryClickEvent> eventConsumer) {
         this.interactions = eventConsumer;
         return this;

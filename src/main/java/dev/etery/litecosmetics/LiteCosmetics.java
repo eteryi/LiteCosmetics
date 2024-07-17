@@ -4,6 +4,7 @@ import dev.etery.litecosmetics.cosmetic.Cosmetic;
 import dev.etery.litecosmetics.data.CosmeticPlayer;
 import dev.etery.litecosmetics.impl.LiteCosmeticsImpl;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.Collection;
@@ -21,7 +22,7 @@ public interface LiteCosmetics {
     CosmeticPlayer player(Player player);
     Logger logger();
 
-    void openShop(Player player);
+    void openShop(Inventory previous, Player player);
 
     ItemStack createTauntDiamond();
 }

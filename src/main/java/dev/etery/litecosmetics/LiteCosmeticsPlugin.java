@@ -30,7 +30,6 @@ public final class LiteCosmeticsPlugin extends JavaPlugin {
             this.saveResource("taunts/cross.png", false);
             this.saveResource("taunts/sword.png", false);
         }
-
     });
     private final CategoryLoader<Hat> hatLoader = new CategoryLoader<>(this, "hats", Hat::from);
 
@@ -38,8 +37,8 @@ public final class LiteCosmeticsPlugin extends JavaPlugin {
     public void onEnable() {
         // Plugin startup login
         LITECOIN = JavaPlugin.getPlugin(me.stephenminer.litecoin.LiteCoin.class);
-        tauntLoader.load(cosmetics);
         hatLoader.load(cosmetics);
+        tauntLoader.load(cosmetics);
         ((LiteCosmeticsImpl) cosmetics).load();
         getCommand("shop").setExecutor(new CosmeticShopCommand(cosmetics));
         getServer().getPluginManager().registerEvents(new PlayerListener(cosmetics), this);

@@ -1,6 +1,7 @@
 name: Hats
 description: Hats are displayed on game as a cool and awesome cosmetic! (PLACEHOLDER TEXT)
-icon: GLASS
+icon: SKULL_ITEM
+item_data: 3
 
 cosmetics:
   glass:
