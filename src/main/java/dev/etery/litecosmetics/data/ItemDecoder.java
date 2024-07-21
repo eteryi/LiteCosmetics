@@ -6,6 +6,7 @@ import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.inventory.meta.SkullMeta;
 
 import java.util.Locale;
 
@@ -14,6 +15,7 @@ public class ItemDecoder {
         String rawMaterial = section.getString(itemKey);
         int data = section.getInt("item_data");
         boolean enchanted = section.getBoolean("item_glow", false);
+        String skullOwner = section.getString("skull_owner", "");
         Material material;
         try {
             material = Material.valueOf(rawMaterial.toUpperCase(Locale.ROOT));
@@ -24,6 +26,10 @@ public class ItemDecoder {
         ItemMeta meta = stack.getItemMeta();
         meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
         meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+        if (meta instanceof SkullMeta && !skullOwner.isEmpty()) {
+            SkullMeta skullMeta = (SkullMeta) meta;
+            skullMeta.setOwner(skullOwner);
+        }
         stack.setItemMeta(meta);
         if (enchanted) stack.addUnsafeEnchantment(Enchantment.LUCK, 1);
         return stack;
