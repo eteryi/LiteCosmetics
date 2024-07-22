@@ -3,6 +3,7 @@ package dev.etery.litecosmetics.impl;
 import dev.etery.litecosmetics.Category;
 import dev.etery.litecosmetics.LiteCosmetics;
 import dev.etery.litecosmetics.cosmetic.Cosmetic;
+import dev.etery.litecosmetics.cosmetic.KillMessage;
 import dev.etery.litecosmetics.cosmetic.Hat;
 import dev.etery.litecosmetics.cosmetic.Taunt;
 import dev.etery.litecosmetics.data.CosmeticPlayer;
@@ -83,9 +84,11 @@ public class LiteCosmeticsImpl implements LiteCosmetics {
         InventoryBuilder inventory = new InventoryBuilder(ChatColor.RESET + "" + ChatColor.GOLD + ChatColor.BOLD + "Shop", 3);
         Category<Hat> hats = category("hats");
         Category<Taunt> taunts = category("taunts");
+        Category<KillMessage> killMessages = category("kill_messages");
 
         inventory.setItem(9, taunts.icon());
         inventory.setItem(11, hats.icon());
+        inventory.setItem(13, killMessages.icon());
 
         inventory.setItem(18, getItemWithName(new ItemStack(Material.FEATHER), ChatColor.GRAY + "Back to last menu"));
         inventory.setItem(26, getItemWithName(new ItemStack(Material.BARRIER), ChatColor.RED + "Close Menu"));

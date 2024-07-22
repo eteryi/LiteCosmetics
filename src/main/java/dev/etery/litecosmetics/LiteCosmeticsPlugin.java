@@ -1,6 +1,8 @@
 package dev.etery.litecosmetics;
 
 import dev.etery.litecosmetics.command.CosmeticShopCommand;
+import dev.etery.litecosmetics.command.TestTauntCommand;
+import dev.etery.litecosmetics.cosmetic.KillMessage;
 import dev.etery.litecosmetics.cosmetic.Hat;
 import dev.etery.litecosmetics.cosmetic.Taunt;
 import dev.etery.litecosmetics.data.CategoryLoader;
@@ -32,6 +34,15 @@ public final class LiteCosmeticsPlugin extends JavaPlugin {
         }
     });
     private final CategoryLoader<Hat> hatLoader = new CategoryLoader<>(this, "hats", Hat::from);
+    private final CategoryLoader<KillMessage> killMessages = new CategoryLoader<>(this, "kill_messages", KillMessage::from, () -> {
+        File messageDir = new File(this.getDataFolder(), "kill_messages");
+        if (!messageDir.exists()) {
+            if (!messageDir.mkdir()) {
+                throw new RuntimeException("Couldn't create /kill_messages");
+            }
+            this.saveResource("kill_messages/color.lua", false);
+        }
+    });
 
     @Override
     public void onEnable() {
@@ -39,14 +50,17 @@ public final class LiteCosmeticsPlugin extends JavaPlugin {
         LITECOIN = JavaPlugin.getPlugin(me.stephenminer.litecoin.LiteCoin.class);
         hatLoader.load(cosmetics);
         tauntLoader.load(cosmetics);
+        killMessages.load(cosmetics);
         ((LiteCosmeticsImpl) cosmetics).load();
         getCommand("shop").setExecutor(new CosmeticShopCommand(cosmetics));
+        getCommand("test").setExecutor(new TestTauntCommand());
         getServer().getPluginManager().registerEvents(new PlayerListener(cosmetics), this);
     }
 
     @Override
     public void onDisable() {
         // Plugin shutdown logic
+        KillMessage.JIT.close();
         ((LiteCosmeticsImpl) cosmetics).stop();
     }
 }

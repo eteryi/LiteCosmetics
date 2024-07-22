@@ -77,5 +77,22 @@
           <version>v1.1.4</version>
           <scope>provided</scope>
       </dependency>
+      <dependency>
+          <groupId>party.iroiro.luajava</groupId>
+          <artifactId>luajava</artifactId>
+          <version>4.0.1</version>
+      </dependency>
+      <dependency>
+          <groupId>party.iroiro.luajava</groupId>
+          <artifactId>luajit</artifactId>
+          <version>4.0.1</version>
+      </dependency>
+      <dependency>
+          <groupId>party.iroiro.luajava</groupId>
+          <artifactId>luajit-platform</artifactId>
+          <version>4.0.1</version>
+          <classifier>natives-desktop</classifier>
+          <scope>runtime</scope>
+      </dependency>
   </dependencies>
 </project>
