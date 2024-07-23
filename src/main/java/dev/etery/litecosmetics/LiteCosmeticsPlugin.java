@@ -60,7 +60,7 @@ public final class LiteCosmeticsPlugin extends JavaPlugin {
     @Override
     public void onDisable() {
         // Plugin shutdown logic
-        KillMessage.JIT.close();
+        JitManager.clean();
         ((LiteCosmeticsImpl) cosmetics).stop();
     }
 }

@@ -1,6 +1,7 @@
 package dev.etery.litecosmetics.cosmetic;
 
 import com.avaje.ebean.validation.NotNull;
+import dev.etery.litecosmetics.JitManager;
 import dev.etery.litecosmetics.LiteCosmeticsPlugin;
 import dev.etery.litecosmetics.data.ItemDecoder;
 import org.bukkit.ChatColor;
@@ -13,26 +14,11 @@ import party.iroiro.luajava.value.RefLuaValue;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 
 public class KillMessage implements Cosmetic {
-    // TODO create a JIT manager to handle all JIT's created by the Kill Messages
     // TODO make post process scripts optional (aka dont crash when the post isnt provided as a file)
-    public static final LuaJit JIT = new LuaJit();
-    static {
-        JIT.openLibraries();
-        JIT.pushJavaObject(System.out);
-        JIT.setGlobal("sys");
-
-        Map<String, String> colorMap = new HashMap<>();
-        Arrays.stream(ChatColor.values()).forEach(it -> colorMap.put(it.name().toLowerCase(), it.toString()));
-
-        JIT.push(colorMap);
-        JIT.setGlobal("color");
-    }
 
     private final String id;
     private final String name;
@@ -40,7 +26,7 @@ public class KillMessage implements Cosmetic {
     private final String description;
     private final ItemStack icon;
     private final Map<String, String> formats;
-    private final RefLuaValue postFunc;
+    private RefLuaValue postFunc = null;
     // litebridge.death.void
 
     public KillMessage(String id, String name, int price, String description, ItemStack icon, String postScript, Map<String, String> format) {
@@ -51,11 +37,13 @@ public class KillMessage implements Cosmetic {
         this.icon = icon;
         this.formats = format;
 
-        // TODO create a general JIT instead of one per death message
-        JIT.run(postScript);
-        RefLuaValue object = (RefLuaValue) JIT.get(id.split(":", 2)[1] + "_post");
-        this.postFunc = object;
-        System.out.println(object.call("hello")[0].toJavaObject());
+        if (!postScript.isEmpty()) {
+            LuaJit jit = JitManager.create();
+            jit.run(postScript);
+            RefLuaValue object = (RefLuaValue) jit.get("post");
+            this.postFunc = object;
+            System.out.println(object.call("hello")[0].toJavaObject());
+        }
     }
 
     @Override
@@ -88,6 +76,7 @@ public class KillMessage implements Cosmetic {
         String description = section.getString("description");
         ItemStack stack = ItemDecoder.decode(section, "icon");
         int price = section.getInt("price");
+        String postEffect = section.getString("post", "");
 
         Map<String, String> formatting = new HashMap<>();
 
@@ -100,15 +89,18 @@ public class KillMessage implements Cosmetic {
             }
         });
 
-        File messageDir = new File(JavaPlugin.getPlugin(LiteCosmeticsPlugin.class).getDataFolder(), "kill_messages");
-        File postScript = new File(messageDir, id.split(":", 2)[1] + ".lua");
+        String rawScript = "";
 
-        String rawScript;
-        try {
-            rawScript = new String(Files.readAllBytes(postScript.toPath()));
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+        if (!postEffect.isEmpty()) {
+            File messageDir = new File(JavaPlugin.getPlugin(LiteCosmeticsPlugin.class).getDataFolder(), "kill_messages");
+            File postScript = new File(messageDir, postEffect + ".lua");
+            try {
+                rawScript = new String(Files.readAllBytes(postScript.toPath()));
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
         }
+
 
         return new KillMessage(id, name, price, description, stack, rawScript, formatting);
     }
@@ -119,6 +111,8 @@ public class KillMessage implements Cosmetic {
 
 
         String rawString = String.format(format, template);
-        return ChatColor.translateAlternateColorCodes('&', (String) Objects.requireNonNull(this.postFunc.call(rawString)[0].toJavaObject()));
+        String str = ChatColor.translateAlternateColorCodes('&', rawString);
+        if (this.postFunc != null) str = ChatColor.translateAlternateColorCodes('&', (String) this.postFunc.call(rawString)[0].toJavaObject());
+        return str;
     }
 }
