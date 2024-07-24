@@ -18,7 +18,58 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class KillMessage implements Cosmetic {
-    // TODO make post process scripts optional (aka dont crash when the post isnt provided as a file)
+
+    private static class PostScript {
+        private static final HashMap<String, PostScript> cache = new HashMap<>();
+
+        public static PostScript load(String name) {
+            if (cache.get(name) != null) return cache.get(name);
+            PostScript script = new PostScript(name);
+            script.load();
+            cache.put(name, script);
+            return script;
+        }
+
+        private final String id;
+        private RefLuaValue postFunc;
+
+        public PostScript(String id) {
+            this.id = id;
+        }
+
+        private void load() {
+            File messageDir = new File(JavaPlugin.getPlugin(LiteCosmeticsPlugin.class).getDataFolder(), "kill_messages");
+            File postScript = new File(messageDir, id + ".lua");
+            String rawScript;
+            try {
+                rawScript = new String(Files.readAllBytes(postScript.toPath()));
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+
+            LuaJit jit = JitManager.create();
+            jit.run(rawScript);
+            RefLuaValue object = (RefLuaValue) jit.get("post");
+            this.postFunc = object;
+        }
+
+        public String apply(String text) {
+            return (String) this.postFunc.call(text)[0].toJavaObject();
+        }
+    }
+
+    private static class NullScript extends PostScript {
+        public NullScript() {
+            super("normal");
+        }
+
+        @Override
+        public String apply(String text) {
+            return text;
+        }
+    }
+
+    private static final PostScript NULL_SCRIPT = new NullScript();
 
     private final String id;
     private final String name;
@@ -26,24 +77,17 @@ public class KillMessage implements Cosmetic {
     private final String description;
     private final ItemStack icon;
     private final Map<String, String> formats;
-    private RefLuaValue postFunc = null;
+    private final PostScript postScript;
     // litebridge.death.void
 
-    public KillMessage(String id, String name, int price, String description, ItemStack icon, String postScript, Map<String, String> format) {
+    public KillMessage(String id, String name, int price, String description, ItemStack icon, String postId, Map<String, String> format) {
         this.id = id;
         this.name = name;
         this.price = price;
         this.description = description;
         this.icon = icon;
         this.formats = format;
-
-        if (!postScript.isEmpty()) {
-            LuaJit jit = JitManager.create();
-            jit.run(postScript);
-            RefLuaValue object = (RefLuaValue) jit.get("post");
-            this.postFunc = object;
-            System.out.println(object.call("hello")[0].toJavaObject());
-        }
+        this.postScript = postId.isEmpty() ? NULL_SCRIPT : PostScript.load(postId);
     }
 
     @Override
@@ -89,20 +133,7 @@ public class KillMessage implements Cosmetic {
             }
         });
 
-        String rawScript = "";
-
-        if (!postEffect.isEmpty()) {
-            File messageDir = new File(JavaPlugin.getPlugin(LiteCosmeticsPlugin.class).getDataFolder(), "kill_messages");
-            File postScript = new File(messageDir, postEffect + ".lua");
-            try {
-                rawScript = new String(Files.readAllBytes(postScript.toPath()));
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        }
-
-
-        return new KillMessage(id, name, price, description, stack, rawScript, formatting);
+        return new KillMessage(id, name, price, description, stack, postEffect, formatting);
     }
 
     public @NotNull String translate(String key, String... template) {
@@ -111,8 +142,6 @@ public class KillMessage implements Cosmetic {
 
 
         String rawString = String.format(format, template);
-        String str = ChatColor.translateAlternateColorCodes('&', rawString);
-        if (this.postFunc != null) str = ChatColor.translateAlternateColorCodes('&', (String) this.postFunc.call(rawString)[0].toJavaObject());
-        return str;
+        return ChatColor.translateAlternateColorCodes('&', this.postScript.apply(rawString));
     }
 }
