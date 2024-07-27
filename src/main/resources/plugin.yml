@@ -7,3 +7,6 @@ commands:
   shop:
     usage: /shop
     description: shopping
+  test:
+    usage: /test
+    description: testing
