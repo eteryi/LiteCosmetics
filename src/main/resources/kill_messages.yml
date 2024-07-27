@@ -8,6 +8,7 @@ cosmetics:
     description: "This is an example of an cosmetic description on the Astronaut Helmet"
     icon: GLASS
     price: 300
+    post: color
     format:
       litebridge_death_void: "%s &7fell out of this world&7!"
       litebridge_death_stab: "%s was killed by %s&7."

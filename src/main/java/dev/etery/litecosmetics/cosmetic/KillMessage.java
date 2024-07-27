@@ -33,7 +33,7 @@ public class KillMessage implements Cosmetic {
         private final String id;
         private RefLuaValue postFunc;
 
-        public PostScript(String id) {
+        private PostScript(String id) {
             this.id = id;
         }
 
