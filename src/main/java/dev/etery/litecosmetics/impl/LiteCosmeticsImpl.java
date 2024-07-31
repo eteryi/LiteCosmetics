@@ -12,6 +12,7 @@ import dev.etery.litecosmetics.inventory.InventoryBuilder;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -57,7 +58,7 @@ public class LiteCosmeticsImpl implements LiteCosmetics {
     }
 
     @Override
-    public CosmeticPlayer player(Player player) {
+    public CosmeticPlayer player(OfflinePlayer player) {
         if (cosmeticPlayers.get(player.getUniqueId()) == null) cosmeticPlayers.put(player.getUniqueId(), new CosmeticPlayerImpl(player.getUniqueId()));
         return cosmeticPlayers.get(player.getUniqueId());
     }

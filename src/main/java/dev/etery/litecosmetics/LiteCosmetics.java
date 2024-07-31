@@ -3,6 +3,7 @@ package dev.etery.litecosmetics;
 import dev.etery.litecosmetics.cosmetic.Cosmetic;
 import dev.etery.litecosmetics.data.CosmeticPlayer;
 import dev.etery.litecosmetics.impl.LiteCosmeticsImpl;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -19,7 +20,7 @@ public interface LiteCosmetics {
     Collection<Category<?>> categories();
     <T extends Cosmetic> Category<T> category(String id);
 
-    CosmeticPlayer player(Player player);
+    CosmeticPlayer player(OfflinePlayer player);
     Logger logger();
 
     void openShop(Inventory previous, Player player);
